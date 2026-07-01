@@ -1,0 +1,27 @@
+{
+  "namespace": "com.farmia.sales",
+  "name": "SalesSummary",
+  "type": "record",
+  "fields": [
+    {
+      "name": "category",
+      "type": "string"
+    },
+    {
+      "name": "total_quantity",
+      "type": "long"
+    },
+    {
+      "name": "total_revenue",
+      "type": "double"
+    },
+    {
+      "name": "window_start",
+      "type": "long"
+    },
+    {
+      "name": "window_end",
+      "type": "long"
+    }
+  ]
+}

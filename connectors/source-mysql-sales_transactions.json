@@ -1,0 +1,24 @@
+{
+  "name": "source-mysql-sales_transactions",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "connection.url": "jdbc:mysql://mysql:3306/db?user=user&password=password&useSSL=false",
+    "mode": "timestamp",
+    "timestamp.column.name": "timestamp",
+    "table.whitelist": "sales_transactions",
+    "topic.prefix": "",
+    "poll.interval.ms": "2000",
+    "numeric.mapping": "best_fit",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "http://schema-registry:8081",
+    "transforms": "createKey,extractKey,renameTopicToKebab",
+    "transforms.createKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.createKey.fields": "transaction_id",
+    "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.extractKey.field": "transaction_id",
+    "transforms.renameTopicToKebab.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.renameTopicToKebab.regex": "sales_transactions",
+    "transforms.renameTopicToKebab.replacement": "sales-transactions"
+  }
+}
