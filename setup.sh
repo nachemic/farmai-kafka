@@ -2,7 +2,11 @@
 
 echo "Iniciando entorno"
 docker compose up -d
-sleep 30
+
+echo "Esperando a que MySQL esté listo..."
+until docker exec mysql mysqladmin ping -u root -p1234 --silent 2>/dev/null; do
+    sleep 3
+done
 
 echo "Creando la tabla transactions"
 docker cp ./sql/ddl.sql mysql:/
