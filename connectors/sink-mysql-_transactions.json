@@ -6,6 +6,6 @@
     "connection.url": "jdbc:mysql://mysql:3306/db?user=user&password=1234&useSSL=false",
     "topics": "_transactions",
     "table.name.format": "sales_transactions",
-    "errors.tolerance": "all"
+    "consumer.override.auto.offset.reset": "latest"
   }
 }
