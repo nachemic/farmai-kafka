@@ -4,9 +4,9 @@ Autor: Ignacio Martínez Godino
 
 Profesor: Jorge Centeno
 
-Tarea de la asignatura Kafka y procesamiento de datos en tiempo real (Universidad Complutense de Madrid, Máster en Big Data & Data Engineering).
+Máster en Big Data & Data Engineering, Universidad Complutense de Madrid.
 
-El pipeline procesa telemetría de sensores agrícolas y transacciones de ventas sobre Confluent Platform 7.8.0 con Docker Compose.
+Tarea de la asignatura Kafka y procesamiento de datos en tiempo real. El pipeline procesa telemetría de sensores agrícolas y transacciones de ventas sobre Confluent Platform 7.8.0 con Docker Compose.
 
 ---
 
@@ -20,12 +20,12 @@ sensor-telemetry (Avro)
        │
        ▼
 [SensorAlerterApp]  ──────────────────────▶  sensor-alerts (Avro)
- Kafka Streams (Java)                               │
- temp > 35°C  →  HIGH_TEMPERATURE                   ▼
+ Kafka Streams (Java)                                │
+ temp > 35°C  →  HIGH_TEMPERATURE                    ▼
  hum  < 20%   →  LOW_HUMIDITY              [MongoDB Sink Connector]
-                                                    │
-                                                    ▼
-                                         MongoDB: course.sensor_alerts
+                                                     │
+                                                     ▼
+                                          MongoDB: course.sensor_alerts
 
 
 [Datagen Connector]
@@ -45,11 +45,9 @@ MySQL: sales_transactions
  key: transaction_id                     ▼
                                   [SalesSummaryApp]
                                   Kafka Streams (Java)
-                                  agrega por categoría
-                                  ventana tumbling 1 min
                                          │
                                          ▼
-                                   sales-summary (Avro)
+                                  sales-summary (Avro)
 ```
 
 ### Componentes
@@ -65,15 +63,11 @@ MySQL: sales_transactions
 
 ---
 
-## Requisitos previos
+## Prerrequisitos
 
 - Docker Desktop
 - Java 17 y Maven 3.x
 - Git Bash u otro shell bash compatible
-
-```bash
-docker info  # verificar que Docker está activo
-```
 
 ---
 
@@ -87,6 +81,7 @@ docker info  # verificar que Docker está activo
 ├── setup.sh
 ├── shutdown.sh
 ├── start_connectors.sh
+├── assets/
 ├── mysql/
 │   ├── init.sql
 │   └── mysql-connector-java-5.1.45.jar
@@ -99,10 +94,10 @@ docker info  # verificar que Docker está activo
 │   ├── source-mysql-sales_transactions.json   # Tarea 2
 │   └── sink-mongodb-sensor_alerts.json        # Tarea 5
 ├── datagen/
-│   └── _transactions.avsc
+│   └── _transactions.avsc           
 └── src/main/
     ├── avro/
-    │   ├── sensor-telemetry.avsc   # Tarea 1/3
+    │   ├── sensor-telemetry.avsc   
     │   ├── sensor-alert.avsc       # Tarea 3
     │   └── sales-summary.avsc      # Tarea 4
     ├── resources/
@@ -233,21 +228,21 @@ Ejemplo de mensaje en `sales-summary`:
 }
 ```
 
-La diferencia `window_end - window_start` es 60 000 ms (1 minuto).
+La diferencia `window_end - window_start` es 60.000 ms (1 minuto).
 
 ### MongoDB
 
 Contar documentos en la colección de alertas:
 
 ```bash
-docker exec mongodb mongosh -u admin -p secret123 --authenticationDatabase admin \
+docker exec mongodb mongosh -u admin -p 1234 --authenticationDatabase admin \
   --eval "db.getSiblingDB('course').sensor_alerts.countDocuments()"
 ```
 
 Ver los últimos documentos:
 
 ```bash
-docker exec mongodb mongosh -u admin -p secret123 --authenticationDatabase admin \
+docker exec mongodb mongosh -u admin -p 1234 --authenticationDatabase admin \
   --eval "db.getSiblingDB('course').sensor_alerts.find().sort({_id:-1}).limit(5).pretty()"
 ```
 
@@ -262,7 +257,7 @@ El conteo debe coincidir con el offset del topic `sensor-alerts`.
 URI de conexión:
 
 ```
-mongodb://admin:secret123@localhost:27018/?authSource=admin
+mongodb://admin:1234@localhost:27018/?authSource=admin
 ```
 
 > ![MongoDB Compass sensor_alerts](assets/screenshot7.png)
@@ -272,7 +267,7 @@ mongodb://admin:secret123@localhost:27018/?authSource=admin
 ## Notas de implementación
 
 - **Topics con una partición**: con 3 brokers y el volumen de datos de esta práctica, una sola partición por topic es suficiente. En producción se configuraría el número de particiones según el throughput esperado.
-- **Schema Avro dual**: `sensor-telemetry.avsc` incluye campos `arg.properties` de Datagen que Maven ignora al generar las clases Java, así el mismo fichero sirve para el conector y para la compilación.
+- **Schema compartido para Datagen y Maven**: el fichero `sensor-telemetry.avsc` se usa tanto para el conector Datagen (necesita el schema en disco para generar los datos de prueba) como para el plugin Maven (que genera la clase Java `SensorTelemetry` a partir de él). Los campos `arg.properties` son propios de Datagen y Maven los ignora sin errores.
 - **Grace period en la ventana de agregación**: la ventana de 1 minuto de `SalesSummaryApp` incluye un grace period de 1 minuto adicional para tolerar retrasos en la llegada de mensajes desde MySQL.
 - **Tipo DECIMAL en Avro**: el campo `price` de MySQL llega serializado como `bytes` en Avro con el driver MySQL 5.1.45. `SalesSummaryApp` incluye una función de conversión para decodificarlo correctamente al calcular `total_revenue`.
 
@@ -293,9 +288,9 @@ Los datos no son persistentes. Al volver a levantar con `./setup.sh` el pipeline
 ## Troubleshooting
 
 **MongoDB Compass — "Authentication failed"**
-Ocurre cuando hay un proceso de MongoDB en Windows en el puerto 27017. Las conexiones no llegan al contenedor Docker, por lo que se debe usar el puerto 27018:
+Si tienes MongoDB instalado en Windows puede estar ocupando el puerto 27017 y las conexiones desde Compass no llegan al contenedor. Usar el puerto 27018 en la URI resuelve el problema:
 ```
-mongodb://admin:secret123@localhost:27018/?authSource=admin
+mongodb://admin:1234@localhost:27018/?authSource=admin
 ```
 
 **Kafka Connect tarda en arrancar**

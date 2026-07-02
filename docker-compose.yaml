@@ -220,7 +220,7 @@ services:
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
-
+  
   mysql:
     image: mysql:8.3
     hostname: mysql
@@ -228,10 +228,10 @@ services:
     volumes:
       - $PWD/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: db
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: 1234
       MYSQL_ROOT_HOST: 172.%
 
   mongodb:
@@ -242,6 +242,6 @@ services:
       - "27018:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret123
+      MONGO_INITDB_ROOT_PASSWORD: 1234
       MONGO_INITDB_DATABASE: course
     command: ["--quiet", "--logpath", "/dev/null"]

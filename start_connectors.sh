@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Ejecutar desde el directorio del proyecto
-
 echo "Lanzando conectores"
 
 curl -s -d @"./connectors/source-datagen-_transactions.json" -H "Content-Type: application/json" -X POST http://localhost:8083/connectors

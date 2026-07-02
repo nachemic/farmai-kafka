@@ -50,7 +50,7 @@ public class SensorAlerterApp {
                                 .setSensorId(sensorId)
                                 .setAlertType("HIGH_TEMPERATURE")
                                 .setTimestamp(telemetry.getTimestamp())
-                                .setDetails("Temperature exceeded 35°C: " + telemetry.getTemperature())
+                                .setDetails("Temperatura superior a 35°C: " + telemetry.getTemperature())
                                 .build()));
                     }
 
@@ -59,7 +59,7 @@ public class SensorAlerterApp {
                                 .setSensorId(sensorId)
                                 .setAlertType("LOW_HUMIDITY")
                                 .setTimestamp(telemetry.getTimestamp())
-                                .setDetails("Humidity below 20%: " + telemetry.getHumidity())
+                                .setDetails("Humedad inferior al 20%: " + telemetry.getHumidity())
                                 .build()));
                     }
 
